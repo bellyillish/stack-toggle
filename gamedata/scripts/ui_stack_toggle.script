@@ -67,6 +67,7 @@ function utils_ui.UICellContainer:FindSimilar(obj, sec)
 
   if
     obj
+    and self.owner.stackToggle
     and not self.owner.stackToggle:GetCheck()
     and MCM.UNSTACKABLE_BAGS[self.ID]
   then
