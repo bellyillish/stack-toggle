@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<string_table>
+  <string id="ui_stack_toggle">
+    <text>Toggle Item Stacking</text>
+  </string>
+
+  <string id="ui_mcm_menu_stackToggle">
+    <text>Stack Toggle</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_subtitleBehavior">
+    <text>Toggle Behavior</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_resetOnOpen">
+    <text>Reset When Closing the Inventory</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_resetOnOpen_desc">
+    <text>If selected, the inventory will always open in stacked mode regardless of how it was set previously.</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_useKeybind">
+    <text>Toggle when Pressing SHIFT + LEFT ALT</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_useKeybind_desc">
+    <text>Enable the SHIFT + LEFT ALT keyboard shortcut to toggle between stacked and unstacked mode when the inventory is open.</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_useButton">
+    <text>Show the Toggle Button</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_useButton_desc">
+    <text>Show/hide the toggle button on the inventory screen.</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_subtitleButton">
+    <text>Button Position</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_buttonX">
+    <text>X Offset</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_buttonY">
+    <text>Y Offset</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_noteButton">
+    <text>NOTE: The X and Y positions are relative to the player's side of the inventory screen.</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_subtitleAlwaysStack">
+    <text>Never Unstack These Item Types</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_noteAlwaysStack">
+    <text>NOTE: The selected item types below will always display as stacked regardless of how the toggle is set.</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_bolts">
+    <text>Bolts</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_patches">
+    <text>Faction Patches</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_ammunition">
+    <text>Ammunition</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_partsMutant">
+    <text>Mutant Parts</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_partsAmmo">
+    <text>Ammo Parts</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_partsCrafting">
+    <text>Crafting Parts</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_partsOutfit">
+    <text>Outfit Parts</text>
+  </string>
+
+  <string id="ui_mcm_stackToggle_alwaysStack_partsWeapon">
+    <text>Weapon Parts</text>
+  </string>
+</string_table>

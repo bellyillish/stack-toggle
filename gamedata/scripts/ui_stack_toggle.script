@@ -1,0 +1,119 @@
+local MCM = ui_stack_toggle_mcm
+
+
+local OriginalFindSimilar  = utils_ui.UICellContainer.FindSimilar
+local OriginalInitControls = ui_inventory.UIInventory.InitControls
+local OriginalReset        = ui_inventory.UIInventory.Reset
+
+
+function ui_inventory.UIInventory:InitControls()
+  OriginalInitControls(self)
+
+  self.stackToggle = self.xml:InitCheck("stack_toggle", self.player_dialog)
+  self.stackToggle:Show(MCM.getConfig().useButton)
+  self.stackToggle:SetCheck(true)
+
+  self:Register(self.stackToggle, "stackToggle")
+  self:AddCallback("stackToggle", ui_events.BUTTON_CLICKED, self.Refresh, self)
+  self:UpdateStackToggle()
+end
+
+
+function ui_inventory.UIInventory:Reset(object)
+  OriginalReset(self, object)
+
+  if MCM.getConfig().resetOnOpen then
+    self.stackToggle:SetCheck(true)
+  end
+end
+
+
+function ui_inventory.UIInventory:Refresh(mode)
+  local sort = 1
+  for index, button in ipairs(self.sort_btn) do
+    if button:GetCheck() then
+      sort = index
+    end
+  end
+
+  self:UnHighlight_All()
+  self:On_Sort(sort, false)
+end
+
+
+function ui_inventory.UIInventory:UpdateStackToggle()
+  local useButton, x, y, w, h =
+    MCM.getConfig().useButton,
+    MCM.getConfig().buttonX,
+    MCM.getConfig().buttonY,
+    MCM.getConfig().buttonW,
+    MCM.getConfig().buttonH
+
+  self.stackToggle:SetWndSize(vector2():set(w, h))
+  self.stackToggle:SetWndPos(vector2():set(x, y))
+  self.stackToggle:Show(useButton)
+end
+
+
+function ui_inventory.UIInventory:ToggleStacking()
+  local stacking = self.stackToggle:GetCheck()
+  self.stackToggle:SetCheck(not stacking)
+  self:Refresh(1)
+end
+
+
+function utils_ui.UICellContainer:FindSimilar(obj, sec)
+  local unstackable = false
+
+  if
+    obj
+    and not self.owner.stackToggle:GetCheck()
+    and MCM.UNSTACKABLE_BAGS[self.ID]
+  then
+    unstackable = true
+
+    for id, config in pairs(MCM.ALWAYS_STACK) do
+      local alwaysStack = MCM.getConfig().alwaysStack[id]
+      local itemMatches = config.match(obj:section())
+
+      if alwaysStack and itemMatches then
+        unstackable = false
+        break
+      end
+    end
+  end
+
+  if unstackable then
+    return false
+  end
+
+  return OriginalFindSimilar(self, obj, sec)
+end
+
+
+function onConfigChange()
+  MCM.resetConfig()
+  GetActorMenu():UpdateStackToggle()
+end
+
+
+function onKeyPress(dik)
+  local inventory = GetActorMenu()
+  local config = MCM.getConfig()
+
+  if
+    config.useKeybind
+    and inventory:IsShown()
+    and dik == config.keybind[1]
+    and ui_mcm.get_mod_key(config.keybind[2])
+  then
+    inventory:ToggleStacking()
+  end
+end
+
+
+function on_game_start()
+  RegisterScriptCallback("on_key_press", onKeyPress)
+  RegisterScriptCallback("mcm_option_change", onConfigChange)
+  RegisterScriptCallback("on_screen_resolution_changed", onConfigChange)
+end

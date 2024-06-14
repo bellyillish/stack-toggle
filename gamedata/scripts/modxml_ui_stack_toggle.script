@@ -1,0 +1,30 @@
+local MCM = ui_stack_toggle_mcm
+
+
+BUTTON_TEMPLATE = [[
+  <stack_toggle x="%d" y="%d" width="%d" height="%d" hint="ui_stack_toggle" stretch="1">
+    <texture>ui_stack_toggle</texture>
+  </stack_toggle>
+]]
+
+
+function onReadXML(name, XML)
+  if not name:match("^ui\\ui_inventory") then
+    return
+  end
+
+  local x, y, w, h =
+    MCM.getConfig().buttonX,
+    MCM.getConfig().buttonY,
+    MCM.getConfig().buttonW,
+    MCM.getConfig().buttonH
+
+  XML:insertFromXMLString(
+    string.format(BUTTON_TEMPLATE, x, y, w, h)
+  )
+end
+
+
+function on_xml_read()
+  RegisterScriptCallback("on_xml_read", onReadXML)
+end

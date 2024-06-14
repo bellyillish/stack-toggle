@@ -1,0 +1,247 @@
+-- default config for mcm or fallbacks
+DEFAULT_CONFIG = {
+  resetOnOpen = false,
+  useKeybind  = true,
+  keybind     = {DIK_keys.DIK_LMENU, 1},
+  useButton   = true,
+  buttonX     = 12,
+  buttonY     = 76,
+  buttonW     = 50,
+  buttonH     = 24,
+}
+
+-- actual runtime config
+local CONFIG = nil
+
+-- alwaysStack presets for items
+-- mcm   = any optional custom mcm field config values
+-- match = function to determine if an item is that type
+ALWAYS_STACK = {
+  bolts = {
+    mcm   = {def = true},
+    match = function(section)
+      return section:match("^bolt")
+    end
+  },
+
+  patches = {
+    mcm   = {def = true},
+    match = function(section)
+      return section:match("_patch$")
+    end
+  },
+
+  ammunition = {
+    mcm   = {def = true},
+    match = function(section)
+      return section:match("^ammo_")
+    end
+  },
+
+  partsAmmo = {
+    mcm   = {def = true},
+    match = function(section)
+      return section:match("^bullet_")
+        or section:match("^casing_")
+        or section:match("^powder_")
+      end
+  },
+
+  partsCrafting = {
+    match = function(section)
+      return section:match("^prt_i_")
+    end
+  },
+
+  partsOutfit = {
+    match = function(section)
+      return section:match("^prt_o_")
+    end
+  },
+
+  partsWeapon = {
+    match = function(section)
+      return section:match("^prt_w_")
+    end
+  },
+
+  partsMutant = {
+    match = function(section)
+      return section:match("^mutant_part_")
+    end
+  },
+}
+
+-- inventory bags to apply stack toggling
+UNSTACKABLE_BAGS = {
+  actor_bag       = true,
+  actor_trade_bag = true,
+  npc_bag         = true,
+  npc_trade_bag   = true,
+}
+
+
+-- merge [n] number of keyed tables
+function merge(...)
+  local args   = {...}
+  local result = {}
+
+  for _, arg in ipairs(args) do
+    for key, value in pairs(arg) do
+      result[key] = value
+    end
+  end
+
+  return result
+end
+
+
+-- merge [n] number of indexed tables
+function imerge(...)
+  local args   = {...}
+  local result = {}
+
+  for _, arg in ipairs(args) do
+    for _, value in ipairs(arg) do
+      result[#result + 1] = value
+    end
+  end
+
+  return result
+end
+
+
+function getAlwaysStackFields()
+  local fields = {}
+
+  for id, config in pairs(ALWAYS_STACK) do
+    fields[#fields + 1] = merge({
+      id   = "alwaysStack_" .. id,
+      type = "check",
+      val  = 1,
+      def  = false,
+    }, config.mcm or {})
+  end
+
+  return fields
+end
+
+
+function getConfig()
+  if CONFIG == nil then
+    CONFIG = merge(DEFAULT_CONFIG, {
+      resetOnOpen = ui_mcm.get("stackToggle/resetOnOpen"),
+      useKeybind  = ui_mcm.get("stackToggle/useKeybind"),
+      useButton   = ui_mcm.get("stackToggle/useButton"),
+      buttonX     = ui_mcm.get("stackToggle/buttonX"),
+      buttonY     = ui_mcm.get("stackToggle/buttonY"),
+      alwaysStack = {},
+    })
+
+    for id, config in pairs(ALWAYS_STACK) do
+      CONFIG.alwaysStack[id] = ui_mcm.get("stackToggle/alwaysStack_" .. id)
+    end
+
+    local aspectAdjust = 4/3 * device().height / device().width
+
+    CONFIG.buttonW = CONFIG.buttonW * aspectAdjust
+  end
+
+  return CONFIG
+end
+
+
+function resetConfig()
+  CONFIG = nil
+end
+
+
+function on_mcm_load()
+  return {
+    id = "stackToggle",
+    sh = true,
+    gr = imerge({
+      {
+        id      = "title",
+        type    = "slide",
+        text    = "ui_mcm_menu_stackToggle",
+        link    = "ui_options_slider_player",
+        size    = {512, 50},
+        spacing = 20,
+      },
+      {
+        id   = "subtitleBehavior",
+        type = "desc",
+        text = "ui_mcm_stackToggle_subtitleBehavior",
+        clr  = {255, 255, 255, 255},
+      },
+      {
+        val  = 1,
+        type = "check",
+        id   = "resetOnOpen",
+        hint = "stackToggle_resetOnOpen",
+        def  = DEFAULT_CONFIG.resetOnOpen,
+      },
+      {
+        val  = 1,
+        type = "check",
+        id   = "useKeybind",
+        hint = "stackToggle_useKeybind",
+        def  = DEFAULT_CONFIG.useKeybind,
+      },
+      {
+        val  = 1,
+        type = "check",
+        id   = "useButton",
+        hint = "stackToggle_useButton",
+        def  = DEFAULT_CONFIG.useButton,
+      },
+      {id = "line", type = "line"},
+      {
+        id   = "subtitleButton",
+        type = "desc",
+        text = "ui_mcm_stackToggle_subtitleButton",
+        clr  = {255, 255, 255, 255},
+      },
+      {
+        id   = "buttonX",
+        type = "track",
+        def  = DEFAULT_CONFIG.buttonX,
+        val  = 2,
+        prec = 0,
+        step = 1,
+        min  = -1024,
+        max  = 1024,
+      },
+      {
+        id   = "buttonY",
+        type = "track",
+        def  = DEFAULT_CONFIG.buttonY,
+        val  = 2,
+        prec = 0,
+        step = 1,
+        min  = -768,
+        max  = 768,
+      },
+      {
+        type = "desc",
+        id   = "noteButton",
+        text = "ui_mcm_stackToggle_noteButton",
+        clr  = {255, 112, 112, 112},
+      },
+      {id = "line", type = "line"},
+      {
+        id   = "subtitleAlwaysStack",
+        type = "desc",
+        text = "ui_mcm_stackToggle_subtitleAlwaysStack",
+        clr  = {255, 255, 255, 255},
+      },
+      {
+        type = "desc",
+        id   = "noteAlwaysStack",
+        text = "ui_mcm_stackToggle_noteAlwaysStack",
+        clr  = {255, 112, 112, 112},
+      },
+    }, getAlwaysStackFields())
+  }
+end
